@@ -4,21 +4,25 @@ const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
-const axios = require("axios");
+const db = require("./models");
+const {
+  createContract,
+  createHistory,
+  getAmount,
+} = require("./controllers/dbContollers");
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const db = require("./models");
-
-const { Contract } = require("./models");
-const { createContract } = require("./controllers/dbContollers");
-
 app.post("/contract", createContract);
+app.post("/billings", createHistory);
+app.get("/contract/:id", getAmount);
+app.post("/");
 
 db.sequelize.sync().then((req) => {
-  app.listen(5000, () => {
+  app.listen(port, () => {
     console.log("server running");
   });
 });

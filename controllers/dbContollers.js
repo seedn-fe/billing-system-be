@@ -1,4 +1,4 @@
-const { Contract } = require("../models");
+const { Contract, History } = require("../models");
 
 const createContract = (req, res) => {
   const {
@@ -26,4 +26,19 @@ const createContract = (req, res) => {
   res.status(200).json({ link: `http://localhost:3000/${merchant_uid}` });
 };
 
-module.exports = { createContract };
+const createHistory = (req, res) => {
+  const params = req.body;
+};
+
+const getAmount = (req, res) => {
+  const id = req.params.id;
+  Contract.findAll({ where: { merchant_uid: id } })
+    .then((contract) => {
+      res.send(contract);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+module.exports = { createContract, createHistory, getAmount };
