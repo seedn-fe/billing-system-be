@@ -82,7 +82,7 @@ const createHistory = async (req, res) => {
             {
               merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
               schedule_at: Math.floor(
-                new Date("2023-01-09T18:33:00").getTime() / 1000
+                new Date("2023-01-10T11:20:00").getTime() / 1000
               ), // 결제 시도 시각 in Unix Time Stamp. 예: 다음 달 1일
               amount,
               name: `리프 정기결제_예약${merchant_uid}`,
