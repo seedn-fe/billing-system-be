@@ -19,7 +19,9 @@ app.use(bodyParser.json());
 app.post("/contract", createContract);
 app.post("/billings", createHistory);
 app.get("/contract/:id", getAmount);
-app.post("/");
+app.get("/", (req, res) => {
+  res.send("this is working");
+});
 
 db.sequelize.sync().then((req) => {
   app.listen(port, () => {
