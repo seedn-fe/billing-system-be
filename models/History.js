@@ -1,12 +1,19 @@
 module.exports = (sequelize, DataTypes) => {
   const History = sequelize.define("History", {
-    customer_uid: {
+    imp_uid: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
       },
       primaryKey: true,
+    },
+    customer_uid: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     merchant_uid: {
       type: DataTypes.STRING,

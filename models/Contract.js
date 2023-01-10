@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Contract = sequelize.define("Contract", {
-    merchant_uid: {
+    customer_uid: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
