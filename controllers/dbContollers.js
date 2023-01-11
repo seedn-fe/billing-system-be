@@ -101,6 +101,7 @@ const getAmount = (req, res) => {
   const id = req.params.id;
   Contract.findAll({ where: { customer_uid: id } })
     .then((contract) => {
+      console.log("getAmount contract:", contract);
       res.send(contract);
     })
     .catch((err) => {
@@ -111,7 +112,7 @@ const getAmount = (req, res) => {
 const handleWebhook = async (req, res) => {
   try {
     const { imp_uid, merchant_uid } = req.body;
-    console.log(imp_uid, merchant_uid);
+    console.log("handlewebhook호출", imp_uid, merchant_uid);
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
       method: "post", // POST method
@@ -131,10 +132,11 @@ const handleWebhook = async (req, res) => {
     });
     const paymentData = getPaymentData.data.response;
     const { status, customer_uid } = paymentData;
-    console.log(paymentData);
+    console.log("웹훅 paymentData", paymentData);
     if (status === "paid") {
       //Db에 결제정보 저장
       History.findAll({ where: { customer_uid } }).then((data) => {
+        console.log({ "히스토리 데이터": data[0] });
         const { amount, buyer_name, buyer_email, buyer_tel } = data[0];
         History.create({
           imp_uid,
@@ -169,7 +171,7 @@ const handleWebhook = async (req, res) => {
       console.log(status);
     }
   } catch (e) {
-    console.log(e);
+    console.log("웹훅 에러", e);
     res.status(400).send(e);
   }
 };
