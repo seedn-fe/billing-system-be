@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { Contract, History } = require("../models");
-const temp_due_date = 1673399998;
+const temp_due_date = 1673310998;
 
 const createContract = (req, res) => {
   const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
@@ -113,6 +113,7 @@ const getAmount = (req, res) => {
 const handleWebhook = async (req, res) => {
   try {
     const { imp_uid, merchant_uid } = req.body;
+    console.log(imp_uid, merchant_uid);
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
       method: "post", // POST method
@@ -132,6 +133,7 @@ const handleWebhook = async (req, res) => {
     });
     const paymentData = getPaymentData.data.response;
     const { status, customer_uid } = paymentData;
+    console.log(paymentData);
     if (status === "paid") {
       //Db에 결제정보 저장
       History.findAll({ where: { customer_uid } }).then((data) => {
@@ -170,6 +172,7 @@ const handleWebhook = async (req, res) => {
       console.log(status);
     }
   } catch (e) {
+    console.log(e);
     res.status(400).send(e);
   }
 };
