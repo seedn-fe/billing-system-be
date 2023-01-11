@@ -132,12 +132,12 @@ const handleWebhook = async (req, res) => {
     });
     const paymentData = getPaymentData.data.response;
     const { status, customer_uid } = paymentData;
-    console.log("웹훅 paymentData", paymentData);
     if (status === "paid") {
       //Db에 결제정보 저장
       History.findAll({ where: { customer_uid } }).then((data) => {
-        console.log({ "히스토리 데이터": data[0] });
-        const { amount, buyer_name, buyer_email, buyer_tel } = data[0];
+        console.log({ "히스토리 데이터": data[0].dataValues });
+        const { amount, buyer_name, buyer_email, buyer_tel } =
+          data[0].dataValues;
         History.create({
           imp_uid,
           merchant_uid,
