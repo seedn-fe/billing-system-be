@@ -158,4 +158,4 @@ const handleWebhook = async (req, res) => {
   }
 };
 
-module.exports = { createContract, requestPay, getAmount, handleWebhook };
+module.exports = { createContract, createHistory, getAmount, handleWebhook };

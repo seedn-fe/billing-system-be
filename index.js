@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const db = require("./models");
 const {
   createContract,
-  requestPay,
+  createHistory,
   getAmount,
   handleWebhook,
 } = require("./controllers/dbContollers");
@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post("/contract", createContract);
-app.post("/billings", requestPay);
+app.post("/billings", createHistory);
 app.post("/iamport-callback/schedule", handleWebhook);
 app.get("/contract/:id", getAmount);
 app.get("/", (req, res) => {
