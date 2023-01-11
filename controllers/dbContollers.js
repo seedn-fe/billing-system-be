@@ -41,60 +41,60 @@ const createHistory = async (req, res) => {
     buyer_email,
     buyer_tel,
   });
-  const getToken = await axios({
-    url: "https://api.iamport.kr/users/getToken",
-    method: "post", // POST method
-    headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-    data: {
-      imp_key: "2734043607034140", // REST API 키e
-      imp_secret:
-        "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
-    },
-  });
-  const { access_token } = getToken.data.response; // 인증 토큰
+  // const getToken = await axios({
+  //   url: "https://api.iamport.kr/users/getToken",
+  //   method: "post", // POST method
+  //   headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+  //   data: {
+  //     imp_key: "2734043607034140", // REST API 키e
+  //     imp_secret:
+  //       "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
+  //   },
+  // });
+  // const { access_token } = getToken.data.response
 
   // 결제(재결제) 요청
-  const paymentResult = await axios({
-    url: `https://api.iamport.kr/subscribe/payments/again`,
-    method: "post",
-    headers: { Authorization: access_token }, // 인증 토큰을 Authorization header에 추가
-    data: {
-      customer_uid,
-      merchant_uid: `mid_${new Date().getTime()}`, // 새로 생성한 결제(재결제)용 주문 번호
-      amount,
-      name: `리프 정기결제${merchant_uid}`,
-    },
-  });
+  // const paymentResult = await axios({
+  //   url: `https://api.iamport.kr/subscribe/payments/again`,
+  //   method: "post",
+  //   headers: { Authorization: access_token }, // 인증 토큰을 Authorization header에 추가
+  //   data: {
+  //     customer_uid,
+  //     merchant_uid: `mid_${new Date().getTime()}`, // 새로 생성한 결제(재결제)용 주문 번호
+  //     amount,
+  //     name: `리프 정기결제${merchant_uid}`,
+  //   },
+  // });
 
-  const { code } = paymentResult.data;
-  if (code === 0) {
-    if (paymentResult.data.response.status === "paid") {
-      const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-      await axios({
-        url: `https://api.iamport.kr/subscribe/payments/schedule`,
-        method: "post",
-        headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
-        data: {
-          customer_uid, // 카드(빌링키)와 1:1로 대응하는 값
-          schedules: [
-            {
-              merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
-              schedule_at: pay_time,
-              amount,
-              name: `리프 정기결제_예약${merchant_uid}`,
-              buyer_name,
-              buyer_tel,
-            },
-          ],
-        },
-      });
-      res.send({ msg: "결제성공" });
-    } else {
-      res.send({ msg: "결제실패" });
-    }
-  } else {
-    res.send({ msg: "카드사 요청 실패" });
-  }
+  // const { code } = paymentResult.data;
+  // if (code === 0) {
+  //   if (paymentResult.data.response.status === "paid") {
+  //     const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
+  //     await axios({
+  //       url: `https://api.iamport.kr/subscribe/payments/schedule`,
+  //       method: "post",
+  //       headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
+  //       data: {
+  //         customer_uid, // 카드(빌링키)와 1:1로 대응하는 값
+  //         schedules: [
+  //           {
+  //             merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
+  //             schedule_at: pay_time,
+  //             amount,
+  //             name: `리프 정기결제_예약${merchant_uid}`,
+  //             buyer_name,
+  //             buyer_tel,
+  //           },
+  //         ],
+  //       },
+  //     });
+  //     res.send({ msg: "결제성공" });
+  //   } else {
+  //     res.send({ msg: "결제실패" });
+  //   }
+  // } else {
+  //   res.send({ msg: "카드사 요청 실패" });
+  // }
 };
 
 const getAmount = (req, res) => {
