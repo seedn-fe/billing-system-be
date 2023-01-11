@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { Contract, History } = require("../models");
-const temp_due_date = 1673397888;
+const temp_due_date = 1673399998;
 
 const createContract = (req, res) => {
   const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
