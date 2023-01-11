@@ -34,28 +34,7 @@ const createContract = (req, res) => {
 };
 
 const createHistory = async (req, res) => {
-  const {
-    imp_uid,
-    customer_uid,
-    merchant_uid,
-    buyer_name,
-    buyer_email,
-    buyer_tel,
-    amount,
-  } = req.body;
-  try {
-    await History.create({
-      imp_uid,
-      customer_uid,
-      merchant_uid,
-      amount,
-      buyer_name,
-      buyer_email,
-      buyer_tel,
-    });
-  } catch (err) {
-    res.send(err);
-  }
+  const { customer_uid, merchant_uid, amount } = req.body;
   let getToken, paymentResult;
   try {
     getToken = await axios({
