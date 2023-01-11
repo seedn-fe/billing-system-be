@@ -110,20 +110,22 @@ const handleWebhook = async (req, res) => {
     const paymentData = getPaymentData.data.response;
     const { status, customer_uid } = paymentData;
     if (status === "paid") {
-      try {
-        const data = await History.findAll({ where: { customer_uid } });
-        console.log(data);
+      History.findAll({ where: { customer_uid } }).then(async (data) => {
         const { amount, buyer_name, buyer_email, buyer_tel } =
           data[0].dataValues;
-        await History.create({
-          imp_uid,
-          merchant_uid,
-          customer_uid,
-          amount,
-          buyer_name,
-          buyer_email,
-          buyer_tel,
-        });
+        try {
+          await History.create({
+            imp_uid,
+            merchant_uid,
+            customer_uid,
+            amount,
+            buyer_name,
+            buyer_email,
+            buyer_tel,
+          });
+        } catch (err) {
+          console.log("히스토리 생성 에러", err);
+        }
         const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
         try {
           await axios({
@@ -147,9 +149,7 @@ const handleWebhook = async (req, res) => {
         } catch (err) {
           console.log(err);
         }
-      } catch (err) {
-        console.log(err);
-      }
+      });
     } else {
       console.log(status);
     }
