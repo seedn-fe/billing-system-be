@@ -102,6 +102,9 @@ const createHistory = async (req, res) => {
 };
 
 const handleWebhook = async (req, res) => {
+  console.log("------------------------");
+  console.log("웹훅 호출됨");
+  console.log("------------------------");
   const { imp_uid, merchant_uid } = req.body;
   let getToken, getPaymentData;
   try {
