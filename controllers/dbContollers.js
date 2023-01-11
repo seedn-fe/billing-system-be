@@ -105,6 +105,7 @@ const handleWebhook = async (req, res) => {
       if (status === "paid") {
         History.findAll({ where: { customer_uid } })
           .then((data) => {
+            console.log("history 데이터:", data);
             const { amount, buyer_name, buyer_email, buyer_tel } =
               data[0].dataValues;
             History.create({
