@@ -147,25 +147,25 @@ const handleWebhook = async (req, res) => {
           buyer_email,
           buyer_tel,
         });
-      });
-      const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-      await axios({
-        url: `https://api.iamport.kr/subscribe/payments/schedule`,
-        method: "post",
-        headers: { Authorization: access_token },
-        data: {
-          customer_uid,
-          schedules: [
-            {
-              merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
-              schedule_at: pay_time,
-              amount,
-              name: `리프 정기결제_예약${merchant_uid}`,
-              buyer_name,
-              buyer_tel,
-            },
-          ],
-        },
+        const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
+        axios({
+          url: `https://api.iamport.kr/subscribe/payments/schedule`,
+          method: "post",
+          headers: { Authorization: access_token },
+          data: {
+            customer_uid,
+            schedules: [
+              {
+                merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
+                schedule_at: pay_time,
+                amount,
+                name: `리프 정기결제_예약${merchant_uid}`,
+                buyer_name,
+                buyer_tel,
+              },
+            ],
+          },
+        });
       });
     } else {
       console.log(status);
