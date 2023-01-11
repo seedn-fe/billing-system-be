@@ -101,7 +101,6 @@ const getAmount = (req, res) => {
   const id = req.params.id;
   Contract.findAll({ where: { customer_uid: id } })
     .then((contract) => {
-      console.log("getAmount contract:", contract);
       res.send(contract);
     })
     .catch((err) => {
@@ -134,39 +133,42 @@ const handleWebhook = async (req, res) => {
     const { status, customer_uid } = paymentData;
     if (status === "paid") {
       //Db에 결제정보 저장
-      History.findAll({ where: { customer_uid } }).then((data) => {
-        console.log({ "히스토리 데이터": data[0].dataValues });
-        const { amount, buyer_name, buyer_email, buyer_tel } =
-          data[0].dataValues;
-        History.create({
-          imp_uid,
-          merchant_uid,
-          customer_uid,
-          amount,
-          buyer_name,
-          buyer_email,
-          buyer_tel,
-        });
-        const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-        axios({
-          url: `https://api.iamport.kr/subscribe/payments/schedule`,
-          method: "post",
-          headers: { Authorization: access_token },
-          data: {
+      History.findAll({ where: { customer_uid } })
+        .then((data) => {
+          const { amount, buyer_name, buyer_email, buyer_tel } =
+            data[0].dataValues;
+          History.create({
+            imp_uid,
+            merchant_uid,
             customer_uid,
-            schedules: [
-              {
-                merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
-                schedule_at: pay_time,
-                amount,
-                name: `리프 정기결제_예약${merchant_uid}`,
-                buyer_name,
-                buyer_tel,
-              },
-            ],
-          },
+            amount,
+            buyer_name,
+            buyer_email,
+            buyer_tel,
+          });
+          const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
+          axios({
+            url: `https://api.iamport.kr/subscribe/payments/schedule`,
+            method: "post",
+            headers: { Authorization: access_token },
+            data: {
+              customer_uid,
+              schedules: [
+                {
+                  merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
+                  schedule_at: pay_time,
+                  amount,
+                  name: `리프 정기결제_예약${merchant_uid}`,
+                  buyer_name,
+                  buyer_tel,
+                },
+              ],
+            },
+          });
+        })
+        .catch((err) => {
+          console.log("History 에러", err);
         });
-      });
     } else {
       console.log(status);
     }
