@@ -1,6 +1,5 @@
 const axios = require("axios");
 const { Contract, History } = require("../models");
-const temp_due_date = 1673310998;
 
 const createContract = (req, res) => {
   const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
@@ -71,7 +70,6 @@ const createHistory = async (req, res) => {
   if (code === 0) {
     if (paymentResult.data.response.status === "paid") {
       const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-      if (pay_time > temp_due_date) return;
       await axios({
         url: `https://api.iamport.kr/subscribe/payments/schedule`,
         method: "post",
@@ -149,7 +147,6 @@ const handleWebhook = async (req, res) => {
         });
       });
       const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-      if (pay_time > temp_due_date) return;
       await axios({
         url: `https://api.iamport.kr/subscribe/payments/schedule`,
         method: "post",
