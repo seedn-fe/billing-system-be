@@ -34,7 +34,24 @@ const createContract = (req, res) => {
 };
 
 const requestInitialPay = async (req, res) => {
-  const { customer_uid, merchant_uid, amount } = req.body;
+  const {
+    customer_uid,
+    merchant_uid,
+    amount,
+    buyer_email,
+    buyer_name,
+    buyer_tel,
+    imp_uid,
+  } = req.body;
+  History.create({
+    imp_uid,
+    merchant_uid,
+    customer_uid,
+    amount,
+    buyer_name,
+    buyer_email,
+    buyer_tel,
+  });
   try {
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
@@ -105,10 +122,9 @@ const handleWebhook = async (req, res) => {
       if (status === "paid") {
         History.findAll({ where: { customer_uid } })
           .then((data) => {
-            console.log("history 데이터:", data);
             const { amount, buyer_name, buyer_email, buyer_tel } =
               data[0].dataValues;
-            History.create({
+            History.upsert({
               imp_uid,
               merchant_uid,
               customer_uid,
