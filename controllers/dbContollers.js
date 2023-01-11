@@ -1,6 +1,17 @@
 const axios = require("axios");
 const { Contract, History } = require("../models");
 
+const getAmount = (req, res) => {
+  const id = req.params.id;
+  Contract.findAll({ where: { customer_uid: id } })
+    .then((contract) => {
+      res.send(contract);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 const createContract = (req, res) => {
   const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
   const customer_uid = `customer_${new Date().getTime()}`;
@@ -33,7 +44,7 @@ const createHistory = async (req, res) => {
     amount,
   } = req.body;
   try {
-    History.create({
+    await History.create({
       imp_uid,
       customer_uid,
       merchant_uid,
@@ -45,29 +56,38 @@ const createHistory = async (req, res) => {
   } catch (err) {
     res.send(err);
   }
-  const getToken = await axios({
-    url: "https://api.iamport.kr/users/getToken",
-    method: "post", // POST method
-    headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-    data: {
-      imp_key: "2734043607034140", // REST API 키e
-      imp_secret:
-        "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
-    },
-  });
+  let getToken, paymentResult;
+  try {
+    getToken = await axios({
+      url: "https://api.iamport.kr/users/getToken",
+      method: "post", // POST method
+      headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+      data: {
+        imp_key: "2734043607034140", // REST API 키e
+        imp_secret:
+          "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
   const { access_token } = getToken.data.response;
 
-  const paymentResult = await axios({
-    url: `https://api.iamport.kr/subscribe/payments/again`,
-    method: "post",
-    headers: { Authorization: access_token }, // 인증 토큰을 Authorization header에 추가
-    data: {
-      customer_uid,
-      merchant_uid: `mid_${new Date().getTime()}`, // 새로 생성한 결제(재결제)용 주문 번호
-      amount,
-      name: `리프 정기결제${merchant_uid}`,
-    },
-  });
+  try {
+    paymentResult = await axios({
+      url: `https://api.iamport.kr/subscribe/payments/again`,
+      method: "post",
+      headers: { Authorization: access_token }, // 인증 토큰을 Authorization header에 추가
+      data: {
+        customer_uid,
+        merchant_uid: `mid_${new Date().getTime()}`, // 새로 생성한 결제(재결제)용 주문 번호
+        amount,
+        name: `리프 정기결제${merchant_uid}`,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 
   const { code } = paymentResult.data;
   if (code === 0) {
@@ -79,17 +99,6 @@ const createHistory = async (req, res) => {
   } else {
     res.send({ msg: "카드사 요청 실패" });
   }
-};
-
-const getAmount = (req, res) => {
-  const id = req.params.id;
-  Contract.findAll({ where: { customer_uid: id } })
-    .then((contract) => {
-      res.send(contract);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 };
 
 const handleWebhook = async (req, res) => {
@@ -107,7 +116,7 @@ const handleWebhook = async (req, res) => {
       },
     });
   } catch (err) {
-    res.send(err);
+    console.log(err);
   }
   const { access_token } = getToken.data.response;
 
@@ -118,51 +127,49 @@ const handleWebhook = async (req, res) => {
       headers: { Authorization: access_token },
     });
   } catch (err) {
-    res.send(err);
+    console.log(err);
   }
   const paymentData = getPaymentData.data.response;
   const { status, customer_uid } = paymentData;
   if (status === "paid") {
-    History.findAll({ where: { customer_uid } })
-      .then(async (data) => {
-        const { amount, buyer_name, buyer_email, buyer_tel } =
-          data[0].dataValues;
-        History.create({
-          imp_uid,
-          merchant_uid,
-          customer_uid,
-          amount,
-          buyer_name,
-          buyer_email,
-          buyer_tel,
-        });
-        const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
-        try {
-          await axios({
-            url: `https://api.iamport.kr/subscribe/payments/schedule`,
-            method: "post",
-            headers: { Authorization: access_token },
-            data: {
-              customer_uid,
-              schedules: [
-                {
-                  merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
-                  schedule_at: pay_time,
-                  amount,
-                  name: `리프 정기결제_예약${merchant_uid}`,
-                  buyer_name,
-                  buyer_tel,
-                },
-              ],
-            },
-          });
-        } catch (err) {
-          res.send(err);
-        }
-      })
-      .catch((err) => {
-        console.log("History 에러", err);
+    try {
+      const data = await History.findAll({ where: { customer_uid } });
+      const { amount, buyer_name, buyer_email, buyer_tel } = data[0].dataValues;
+      await History.create({
+        imp_uid,
+        merchant_uid,
+        customer_uid,
+        amount,
+        buyer_name,
+        buyer_email,
+        buyer_tel,
       });
+      const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
+      try {
+        await axios({
+          url: `https://api.iamport.kr/subscribe/payments/schedule`,
+          method: "post",
+          headers: { Authorization: access_token },
+          data: {
+            customer_uid,
+            schedules: [
+              {
+                merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
+                schedule_at: pay_time,
+                amount,
+                name: `리프 정기결제_예약${merchant_uid}`,
+                buyer_name,
+                buyer_tel,
+              },
+            ],
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   } else {
     console.log(status);
   }
