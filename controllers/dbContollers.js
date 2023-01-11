@@ -12,6 +12,18 @@ const getAmount = (req, res) => {
     });
 };
 
+const updateContract = (req, res) => {
+  const { buyer_tel, buyer_name, buyer_email, customer_uid } = req.body;
+  Contract.update(
+    {
+      buyer_email,
+      buyer_name,
+      buyer_tel,
+    },
+    { where: { customer_uid } }
+  );
+};
+
 const createContract = (req, res) => {
   const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
   const customer_uid = `customer_${new Date().getTime()}`;
@@ -34,24 +46,7 @@ const createContract = (req, res) => {
 };
 
 const requestInitialPay = async (req, res) => {
-  const {
-    customer_uid,
-    merchant_uid,
-    amount,
-    buyer_email,
-    buyer_name,
-    buyer_tel,
-    imp_uid,
-  } = req.body;
-  History.create({
-    imp_uid,
-    merchant_uid,
-    customer_uid,
-    amount,
-    buyer_name,
-    buyer_email,
-    buyer_tel,
-  });
+  const { customer_uid, merchant_uid, amount } = req.body;
   try {
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
@@ -120,11 +115,11 @@ const handleWebhook = async (req, res) => {
       const paymentData = getPaymentData.data.response;
       const { status, customer_uid } = paymentData;
       if (status === "paid") {
-        History.findAll({ where: { customer_uid } })
-          .then((data) => {
+        Contract.findAll({ where: { customer_uid } })
+          .then((contract) => {
             const { amount, buyer_name, buyer_email, buyer_tel } =
-              data[0].dataValues;
-            History.upsert({
+              contract[0].dataValues;
+            History.create({
               imp_uid,
               merchant_uid,
               customer_uid,
@@ -170,4 +165,5 @@ module.exports = {
   requestInitialPay,
   getAmount,
   handleWebhook,
+  updateContract,
 };

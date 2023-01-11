@@ -10,6 +10,7 @@ const {
   requestInitialPay,
   getAmount,
   handleWebhook,
+  updateContract,
 } = require("./controllers/dbContollers");
 
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.put("/contract", updateContract);
 app.post("/contract", createContract);
 app.post("/billings", requestInitialPay);
 app.post("/iamport-callback/schedule", handleWebhook);

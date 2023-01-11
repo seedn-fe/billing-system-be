@@ -28,8 +28,17 @@ module.exports = (sequelize, DataTypes) => {
     end_date: {
       type: DataTypes.STRING,
     },
-    name: {
+    buyer_name: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    buyer_email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    buyer_tel: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   });
   return Contract;

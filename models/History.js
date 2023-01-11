@@ -22,18 +22,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-    amount: {
-      type: DataTypes.INTEGER,
-    },
-    buyer_name: {
-      type: DataTypes.STRING,
-    },
-    buyer_email: {
-      type: DataTypes.STRING,
-    },
-    buyer_tel: {
-      type: DataTypes.STRING,
-    },
   });
   return History;
 };
