@@ -154,7 +154,7 @@ const handleWebhook = async (req, res) => {
               buyer_email,
               buyer_tel,
             });
-            const pay_time = Math.floor(new Date().getTime() / 1000 + 10800);
+            const pay_time = Math.floor(new Date().getTime() / 1000 + 216000);
             axios({
               url: `https://api.iamport.kr/subscribe/payments/schedule`,
               method: "post",
