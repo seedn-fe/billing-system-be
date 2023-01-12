@@ -13,7 +13,6 @@ const {
   updateContract,
 } = require("./controllers/dbContollers");
 const { getTable, getHistory } = require("./controllers/apiControllers");
-const nodemailer = require("nodemailer");
 
 app.use(cors());
 app.use(express.json());
@@ -29,31 +28,6 @@ app.get("/table", getTable);
 app.post("/history", getHistory);
 app.get("/", (req, res) => {
   res.send("this is working");
-});
-
-const transporter = nodemailer.createTransport({
-  service: "naver",
-  host: "smtp.naver.com",
-  port: 465,
-  auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
-
-const options = {
-  from: process.env.EMAIL_ADDRESS,
-  to: "hank29206880@gmail.com",
-  subject: "결제가 완료되었습니다",
-  text: "결제가 완료됨.",
-};
-
-transporter.sendMail(options, function (err, info) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log("Sent:", info.response);
 });
 
 db.sequelize.sync().then((req) => {

@@ -1,5 +1,16 @@
 const axios = require("axios");
 const { Contract, History } = require("../models");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "naver",
+  host: "smtp.naver.com",
+  port: 465,
+  auth: {
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 const getAmount = (req, res) => {
   const id = req.params.id;
@@ -47,7 +58,7 @@ const createContract = (req, res) => {
 };
 
 const requestInitialPay = async (req, res) => {
-  const { customer_uid, merchant_uid, amount } = req.body;
+  const { customer_uid, merchant_uid, amount, buyer_email } = req.body;
   try {
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
@@ -75,6 +86,20 @@ const requestInitialPay = async (req, res) => {
       const { code } = paymentResult.data;
       if (code === 0) {
         if (paymentResult.data.response.status === "paid") {
+          const options = {
+            from: process.env.EMAIL_ADDRESS,
+            to: buyer_email,
+            subject: "결제가 완료되었습니다",
+            text: "결제 완료",
+          };
+
+          transporter.sendMail(options, function (err, info) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            console.log("Sent:", info.response);
+          });
           res.send({ msg: "결제성공" });
         } else {
           res.send({ msg: "결제실패" });
