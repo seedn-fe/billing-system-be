@@ -25,7 +25,8 @@ const updateContract = (req, res) => {
 };
 
 const createContract = (req, res) => {
-  const { amount, deviceCount, unitSize, startDate, endDate, name } = req.body;
+  const { amount, deviceCount, unitSize, startDate, endDate, manager } =
+    req.body;
   const customer_uid = `customer_${new Date().getTime()}`;
   const merchant_uid = `mid_${new Date().getTime()}`;
   Contract.create({
@@ -35,7 +36,7 @@ const createContract = (req, res) => {
     start_date: startDate,
     end_date: endDate,
     unit_size: unitSize,
-    name,
+    manager,
   }).catch((err) => {
     console.log(err);
     res.status(400).json({ message: "계약생성에 실패했습니다" });
@@ -128,7 +129,7 @@ const handleWebhook = async (req, res) => {
               buyer_email,
               buyer_tel,
             });
-            const pay_time = Math.floor(new Date().getTime() / 1000 + 100);
+            const pay_time = Math.floor(new Date().getTime() / 1000 + 10800);
             axios({
               url: `https://api.iamport.kr/subscribe/payments/schedule`,
               method: "post",

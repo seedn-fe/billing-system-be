@@ -12,6 +12,7 @@ const {
   handleWebhook,
   updateContract,
 } = require("./controllers/dbContollers");
+const { getTable } = require("./controllers/apiControllers");
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +24,7 @@ app.post("/contract", createContract);
 app.post("/billings", requestInitialPay);
 app.post("/iamport-callback/schedule", handleWebhook);
 app.get("/contract/:id", getAmount);
+app.get("/table", getTable);
 app.get("/", (req, res) => {
   res.send("this is working");
 });

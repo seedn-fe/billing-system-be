@@ -22,6 +22,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
+    manager: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
     start_date: {
       type: DataTypes.STRING,
     },
