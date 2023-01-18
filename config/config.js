@@ -20,6 +20,7 @@ const production = {
   database: env.DB_DATABASE,
   host: env.DB_HOST,
   dialect: "mysql",
+  logging: false,
 };
 
 module.exports = { development, test, production };
