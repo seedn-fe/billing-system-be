@@ -59,6 +59,7 @@ const createContract = (req, res) => {
 
 const requestInitialPay = async (req, res) => {
   const { customer_uid, merchant_uid, amount, buyer_email } = req.body;
+  console.log(buyer_email);
   try {
     const getToken = await axios({
       url: "https://api.iamport.kr/users/getToken",
@@ -154,7 +155,7 @@ const handleWebhook = async (req, res) => {
               buyer_email,
               buyer_tel,
             });
-            const pay_time = Math.floor(new Date().getTime() / 1000 + 216000);
+            const pay_time = Math.floor(new Date().getTime() / 1000 + 60);
             axios({
               url: `https://api.iamport.kr/subscribe/payments/schedule`,
               method: "post",
