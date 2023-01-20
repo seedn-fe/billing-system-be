@@ -145,7 +145,8 @@ const handleWebhook = async (req, res) => {
         where: { customer_uid },
         raw: true,
       });
-      const { amount, buyer_name, buyer_email, buyer_tel } = contract[0];
+      const { amount, buyer_name, buyer_email, buyer_tel, end_date } =
+        contract[0];
       db.History.create({
         imp_uid,
         merchant_uid,
@@ -155,7 +156,20 @@ const handleWebhook = async (req, res) => {
         buyer_email,
         buyer_tel,
       });
-      const pay_time = Math.floor(new Date().getTime() / 1000 + 60);
+      let next_pay_year = new Date().getFullYear();
+      let next_pay_month = new Date().getMonth() + 1;
+      if (next_pay_month === 12) {
+        next_pay_year += 1;
+        next_pay_month = 0;
+      }
+      const next_pay_date = new Date(
+        `${next_pay_year}-${next_pay_month + 1}-25`
+      );
+      const unix_timestamp = Math.floor(next_pay_date.getTime() / 1000);
+      const last_pay_timestamp = Math.floor(
+        new Date(end_date).getTime() / 1000
+      );
+      if (unix_timestamp > last_pay_timestamp) return;
       axios({
         url: `https://api.iamport.kr/subscribe/payments/schedule`,
         method: "post",
@@ -165,7 +179,7 @@ const handleWebhook = async (req, res) => {
           schedules: [
             {
               merchant_uid: `mid_${new Date().getTime()}`, // 주문 번호
-              schedule_at: pay_time,
+              schedule_at: unix_timestamp,
               amount,
               name: `리프 정기결제_예약${merchant_uid}`,
               buyer_name,
