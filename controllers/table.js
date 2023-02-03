@@ -1,3 +1,4 @@
+const router = require("express").Router();
 const db = require("../models");
 
 const getTable = async (req, res) => {
@@ -56,17 +57,8 @@ const getTable = async (req, res) => {
   }
 };
 
-const getHistory = async (req, res) => {
-  const { customer_uid } = req.body;
-  try {
-    const histories = await db.History.findAll({
-      where: { customer_uid },
-      raw: true,
-    });
-    res.send(histories);
-  } catch (err) {
-    res.send(err);
-  }
-};
+router.get("/", getTable);
 
-module.exports = { getTable, getHistory };
+module.exports = function (app) {
+  app.use("/table", router);
+};

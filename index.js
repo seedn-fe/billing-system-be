@@ -2,32 +2,22 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 const bodyParser = require("body-parser");
 const db = require("./models");
-const {
-  createContract,
-  requestInitialPay,
-  getAmount,
-  handleWebhook,
-  updateContract,
-} = require("./controllers/dbContollers");
-const { getTable, getHistory } = require("./controllers/apiControllers");
+const controllers = require("./controllers/index");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.put("/contract", updateContract);
-app.post("/contract", createContract);
-app.post("/billings", requestInitialPay);
-app.post("/iamport-callback/schedule", handleWebhook);
-app.get("/contract/:id", getAmount);
-app.get("/table", getTable);
-app.post("/history", getHistory);
 app.get("/", (req, res) => {
   res.send("this is working");
+});
+
+controllers.forEach((controller) => {
+  controller(app);
 });
 
 db.sequelize.sync().then((req) => {
