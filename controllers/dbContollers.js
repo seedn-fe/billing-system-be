@@ -1,14 +1,15 @@
 const axios = require("axios");
 const db = require("../models");
 const nodemailer = require("nodemailer");
+const config = require("config");
 
 const transporter = nodemailer.createTransport({
   service: "naver",
   host: "smtp.naver.com",
   port: 465,
   auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASSWORD,
+    user: config.email.EMAIL_ADDRESS,
+    pass: config.email.EMAIL_PASSWORD,
   },
 });
 

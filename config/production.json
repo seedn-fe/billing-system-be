@@ -1,0 +1,8 @@
+{
+  "username": "root",
+  "password": "12345678",
+  "database": "bill",
+  "host": "localhost",
+  "dialect": "mysql",
+  "logging": false
+}
