@@ -70,9 +70,9 @@ const requestInitialPay = async (req, res) => {
       method: "post", // POST method
       headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
       data: {
-        imp_key: "2734043607034140", // REST API 키e
+        imp_key: "0588001860717135", // REST API 키e
         imp_secret:
-          "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
+          "Xs3u5jTKTnGYwAKEAfoaz0wf0Um0CADzQ1ue4OSDIirsjvhTiJ3373ZKVWJl8WytVPcW8Zteceng6K30", // REST API Secret
       },
     });
     const { access_token } = getToken.data.response;
@@ -127,9 +127,9 @@ const handleWebhook = async (req, res) => {
       method: "post", // POST method
       headers: { "Content-Type": "application/json" },
       data: {
-        imp_key: "2734043607034140",
+        imp_key: "0588001860717135",
         imp_secret:
-          "GrPTv68uoWFd2wVQH7HM3fLIwK4zsgsYZuJK9Oc4WPxzScv8DUZVRUlwpzjgVBxAztdNGBo9xiJcQ3LW", // REST API Secret
+          "Xs3u5jTKTnGYwAKEAfoaz0wf0Um0CADzQ1ue4OSDIirsjvhTiJ3373ZKVWJl8WytVPcW8Zteceng6K30", // REST API Secret
       },
     });
     const { access_token } = getToken.data.response;

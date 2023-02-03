@@ -24,7 +24,9 @@ const getTable = async (req, res) => {
         (history) => history.customer_uid === customer_uid
       );
       if (filtered.length > 0) {
-        last_pay_date = filtered[0].createdAt;
+        last_pay_date = new Intl.DateTimeFormat("kr").format(
+          new Date(filtered[0].createdAt)
+        );
         acc = filtered.length * amount;
         count = filtered.length;
         status = acc === count * amount ? "정상" : "비정상";
