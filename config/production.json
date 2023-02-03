@@ -1,8 +1,14 @@
 {
-  "username": "root",
-  "password": "12345678",
-  "database": "bill",
-  "host": "localhost",
-  "dialect": "mysql",
-  "logging": false
+  "sequelize": {
+    "username": "root",
+    "password": "seedn2023",
+    "database": "bill",
+    "host": "localhost",
+    "dialect": "mysql",
+    "logging": false
+  },
+  "email": {
+    "EMAIL_ADDRESS": "hank1245@naver.com",
+    "EMAIL_PASSWORD": "hank124795"
+  }
 }
